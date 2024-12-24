@@ -53,13 +53,14 @@ and you you should see responses like this:
       "#text": "https://lastfm.freetls.fastly.net/i/u/300x300/28721e8f6088e0583ee45e6313816f7c.jpg"
     }
   ],
-  "name": "Sweetness and Light"
+  "name": "Sweetness and Light",
+  "date": "24 Dec 2024, 10:20"
 }
 ```
 
 Now its up to you how to embed it in your website. Some sample JS code has been provided.
 
-## Installing on Linux
+## Installing on Linux (Debian and derivatives)
 `make install` should take care of that. It will copy and enable the service, as well as creating a blank logfile. It assumes you have a user `www-data` who will be granted privileges to run the script.
 
 Reminder: you'll need to specify the `LASTFM_API_KEY` in the user's environment. You may wish to modify the systemd unitfile to achieve this.
