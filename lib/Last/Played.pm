@@ -41,7 +41,7 @@ sub new {
     croak "Last.FM API key required." if !$opts{api_key} or !($opts{api_key} =~ /^\w+$/);
     my %self = (
         api_key => $opts{api_key},
-        get_recent_tracks => "http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&api_key=$opts{api_key}&nowplaying=true&format=json&limit=1"
+        get_recent_tracks => "http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&api_key=$opts{api_key}&nowplaying=\"true\"&format=json&limit=1"
     );
     return bless \%self, $class;
 }
