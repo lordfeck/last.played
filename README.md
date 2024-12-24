@@ -13,7 +13,7 @@ Use the makefile to install all dependencies (Plack, LWP):
 make init
 ```
 
-Optional: Run `apt install libplack-perl libwww-perl` to install the packages globally on Debian.
+Optional: Run `apt install libplack-perl libwww-perl libjson-perl` to install the packages globally on Debian.
 
 Set the env var `LASTFM_API_KEY=<your_key>` as an export in your shell somewhere. If you don't already have a Last.fm API key, [you can obtain one here](https://www.last.fm/api/account/create).
 
@@ -61,3 +61,5 @@ Now its up to you how to embed it in your website. Some sample JS code has been 
 
 ## Installing on Linux
 `make install` should take care of that. It will copy and enable the service, as well as creating a blank logfile. It assumes you have a user `www-data` who will be granted privileges to run the script.
+
+Reminder: you'll need to specify the `LASTFM_API_KEY` in the user's environment. You may wish to modify the systemd unitfile to achieve this.

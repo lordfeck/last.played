@@ -1,5 +1,5 @@
 INSTALLER := $(shell command -v cpanm 2>/dev/null || echo cpan)
-PERL_DEPS = LWP Plack
+PERL_DEPS = LWP Plack JSON
 
 .PHONY: check_root
 check_root:
@@ -23,4 +23,4 @@ install: check_root
 	cp -v last.played.service /etc/systemd/system/
 	touch /var/log/last.played.log && chown www-data /var/log/last.played.log
 	systemctl daemon-reload
-	systemd enable last.played.service
+	systemctl enable last.played.service

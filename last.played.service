@@ -6,6 +6,8 @@ After=syslog.target
 User=www-data
 Group=www-data
 Type=forking
+Environment="LASTFM_API_KEY="
+Environment="LASTFM_USER_ID="
 ExecStart=/usr/bin/plackup -a /usr/local/bin/last.played.psgi -l 127.0.0.1:5010 \
     --daemonize --access-log /var/log/last.played.log
 Restart=always
