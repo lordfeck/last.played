@@ -15,5 +15,5 @@ my $key = $ENV{LASTFM_API_KEY};
 my $lfm = Last::Played->new(api_key => $key);
 
 #say $lfm->get_last_played();
-say $lfm->get_last_played("feck111");
+say $lfm->get_last_played("foo");
 

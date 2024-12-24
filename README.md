@@ -13,17 +13,19 @@ Use the makefile to install all dependencies (Plack, LWP):
 make init
 ```
 
+Optional: Run `apt install libplack-perl libwww-perl` to install the packages globally on Debian.
+
 Set the env var `LASTFM_API_KEY=<your_key>` as an export in your shell somewhere. If you don't already have a Last.fm API key, [you can obtain one here](https://www.last.fm/api/account/create).
 
 Optional: set the env var `LASTFM_USER_ID` to a default user ID in your shell. The psgi script will fallback to this user ID if none is specified in the request.
 
 ## Running it
-`make run` will start the PSGI script and bind to port 5000 as a default. In production you'll want to host it behind a reverse proxy.
+`make run` will start the PSGI script and bind to port 5010 as a default. In production you'll want to host it behind a reverse proxy.
 
 Make requests as follows:
 
 ```
-http://localhost:5000/?user=foo
+http://localhost:5010/?user=foo
 ```
 
 and you you should see responses like this:
@@ -56,3 +58,6 @@ and you you should see responses like this:
 ```
 
 Now its up to you how to embed it in your website. Some sample JS code has been provided.
+
+## Installing on Linux
+`make install` should take care of that. It will copy and enable the service, as well as creating a blank logfile. It assumes you have a user `www-data` who will be granted privileges to run the script.

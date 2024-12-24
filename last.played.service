@@ -1,0 +1,14 @@
+[Unit]
+Description=last.played plack daemon
+After=syslog.target
+
+[Service]
+User=www-data
+Group=www-data
+Type=forking
+ExecStart=/usr/bin/plackup -a /usr/local/bin/last.played.psgi -l 127.0.0.1:5010 \
+    --daemonize --access-log /var/log/last.played.log
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
