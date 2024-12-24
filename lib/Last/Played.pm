@@ -25,7 +25,7 @@ Last.fm API Key, obtainable at https://www.last.fm/api/account/create.
 
 A callback URL is not necessary.
 
-Depends on Croak and LWP.
+Depends on Carp and LWP.
 
 =head1 METHODS
 get_last_played
@@ -62,7 +62,7 @@ sub get_last_played {
         # splice it down, we don't need the boilerplate
         my $recent = $json->{recenttracks}->{track}[0];
         return "{message: \"missing recent track data\", status: \"error\"}" unless $recent;
-        my %jsonHash = (artist => $recent->{artist}->{'#text'}, album => $recent->{album}->{'#text'}, url => $recent->{url}, name => $recent->{name}, image => $recent->{image});
+        my %jsonHash = (artist => $recent->{artist}->{'#text'}, album => $recent->{album}->{'#text'}, url => $recent->{url}, name => $recent->{name}, image => $recent->{image}, date => $recent->{date}->{'#text'});
         return encode_json(\%jsonHash);
     } elsif ($res->code eq 401 or $res->code eq 403) {
         return "{message: \"could not authenticate with last.fm\", status: \"error\"}";
