@@ -8,8 +8,8 @@ Group=www-data
 Type=forking
 Environment="LASTFM_API_KEY="
 Environment="LASTFM_USER_ID="
-ExecStart=/usr/bin/plackup -a /usr/local/bin/last.played.psgi -l 127.0.0.1:5010 \
-    --daemonize --access-log /var/log/last.played.log
+ExecStart=/usr/bin/starman -a /usr/local/bin/last.played.psgi -l 127.0.0.1:5010 \
+    --daemonize --access-log /var/log/last.played.log --workers 5 -E deployment
 Restart=always
 
 [Install]

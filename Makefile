@@ -1,5 +1,5 @@
 INSTALLER := $(shell command -v cpanm 2>/dev/null || echo cpan)
-PERL_DEPS = LWP Plack JSON
+PERL_DEPS = LWP Plack JSON Starman
 
 .PHONY: check_root
 check_root:

@@ -41,7 +41,7 @@ my $app = sub {
         return [
             '500',
             [ 'Content-Type' => 'application/json' ],
-            [ "{ message: \"UserID is required.\", status: \"error\"}" ]
+            [ "{ \"message\": \"UserID is required.\", \"status\": \"error\"}" ]
         ];
     }
     

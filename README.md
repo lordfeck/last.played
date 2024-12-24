@@ -7,13 +7,13 @@ Requires a Last.FM API key and a few common Perl modules to work.
 The Last::Played library also works standalone.
 
 # USING
-Use the makefile to install all dependencies (Plack, LWP):
+Use the makefile to install all dependencies (Plack, LWP, Starman, JSON):
 
 ```
 make init
 ```
 
-Optional: Run `apt install libplack-perl libwww-perl libjson-perl` to install the packages globally on Debian.
+Optional: Run `apt install libplack-perl libwww-perl libjson-perl starman` to install the packages globally on Debian.
 
 Set the env var `LASTFM_API_KEY=<your_key>` as an export in your shell somewhere. If you don't already have a Last.fm API key, [you can obtain one here](https://www.last.fm/api/account/create).
 
