@@ -1,10 +1,10 @@
 Last.Played
 ============
-No-frills PSGI application that will fetch the last played track of any Last.FM user.
+No-frills PSGI application that will fetch the last played track of any Last.FM user. It also can fetch the user's top played track of all time, last week or last 12 months.
 
 Requires a Last.FM API key and a few common Perl modules to work.
 
-The Last::Played library also works standalone.
+The Last::Played library also works standalone. The methods will be documented in POD, or just refer to `last.test.pl` for an example.
 
 # USING
 Use the makefile to install all dependencies (Plack, LWP, Starman, JSON):
@@ -13,7 +13,7 @@ Use the makefile to install all dependencies (Plack, LWP, Starman, JSON):
 make init
 ```
 
-Optional: Run `apt install libplack-perl libwww-perl libjson-perl starman` to install the packages globally on Debian.
+Alternative: Run `apt install libplack-perl libwww-perl libjson-perl starman` to install the packages globally on Debian.
 
 Set the env var `LASTFM_API_KEY=<your_key>` as an export in your shell somewhere. If you don't already have a Last.fm API key, [you can obtain one here](https://www.last.fm/api/account/create).
 
@@ -26,9 +26,11 @@ Make requests as follows:
 
 ```
 http://localhost:5010/?user=foo
+OR
+http://localhost:5010/now?user=foo
 ```
 
-and you you should see responses like this:
+and you will see responses like this:
 
 ```
 {
@@ -59,7 +61,47 @@ and you you should see responses like this:
 }
 ```
 
-Now its up to you how to embed it in your website. Some sample JS code has been provided.
+Now it is up to you how to embed it on your website. Some sample JS code has been provided.
+
+# OTHER ROUTES
+
+You can also request the most played track over the following time periods: week, year and month.
+
+```
+http://localhost:5010/top-week?user=foo
+http://localhost:5010/top-year?user=foo
+http://localhost:5010/top-alltime?user=foo
+```
+
+The response will always be as follows. Note there is less detail than the 'now playing' route, but the playcount is included.
+
+```
+{
+  "name": "Bulls",
+  "url": "https://www.last.fm/music/All+Them+Witches/_/Bulls",
+  "playcount": "5",
+  "artist": "All Them Witches",
+  "image": [
+    {
+      "size": "small",
+      "#text": "https://lastfm.freetls.fastly.net/i/u/34s/2a96cbd8b46e442fc41c2b86b821562f.png"
+    },
+    {
+      "size": "medium",
+      "#text": "https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png"
+    },
+    {
+      "#text": "https://lastfm.freetls.fastly.net/i/u/174s/2a96cbd8b46e442fc41c2b86b821562f.png",
+      "size": "large"
+    },
+    {
+      "size": "extralarge",
+      "#text": "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png"
+    }
+  ]
+}
+
+```
 
 ## Installing on Linux (Debian and derivatives)
 `make install` should take care of that. It will copy and enable the service, as well as creating a blank logfile. It assumes you have a user `www-data` who will be granted privileges to run the script.

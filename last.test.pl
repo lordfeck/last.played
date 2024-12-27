@@ -11,9 +11,13 @@ use Last::Played;
 #my $lfm = Last::Played->new();
 
 my $key = $ENV{LASTFM_API_KEY};
+my $USER = $ENV{LASTFM_USER_ID};
 
 my $lfm = Last::Played->new(api_key => $key);
 
 #say $lfm->get_last_played();
-say $lfm->get_last_played("foo");
+say $lfm->get_last_played($USER);
+say $lfm->get_top_track_alltime($USER);
+say $lfm->get_top_track_year($USER);
+say $lfm->get_top_track_week($USER);
 
