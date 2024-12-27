@@ -48,7 +48,7 @@ sub new {
 
 sub get_last_played {
     my ($self, $user) = @_;
-    return "{\"message\": \"username required\", \"status\": \"error\"}" if !$user or !($user =~ /^\w+$/);
+    return error ("username required") if !$user or !($user =~ /^\w+$/);
 
     # build url string - append user name query param
     my $reqUrl = "$self->{get_recent_tracks}&user=$user";
@@ -61,16 +61,21 @@ sub get_last_played {
         
         # splice it down, we don't need the boilerplate
         my $recent = $json->{recenttracks}->{track}[0];
-        return "{\"message\": \"missing recent track data\", \"status\": \"error\"}" unless $recent;
+        return error ("missing recent track data") unless $recent;
 
         my $date = $recent->{date}->{'#text'} ?  $recent->{date}->{'#text'} : "";
         my %jsonHash = (artist => "$recent->{artist}->{'#text'}", album => "$recent->{album}->{'#text'}", url => "$recent->{url}", name => "$recent->{name}", image => $recent->{image}, date => $date, nowplaying => $recent->{'@attr'}->{nowplaying});
         return encode_json(\%jsonHash);
     } elsif ($res->code eq 401 or $res->code eq 403) {
-        return "{\"message\": \"could not authenticate with last.fm\", \"status\": \"error\"}";
+        return error ("could not authenticate with last.fm");
     } else {
         return $res->content, "\n";
     }
+}
+
+sub error {
+    my ($msg) = @_;
+    return "{\"message\": \"$msg\", \"status\": \"error\"}";
 }
 
 1;

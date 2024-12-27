@@ -54,7 +54,8 @@ and you you should see responses like this:
     }
   ],
   "name": "Sweetness and Light",
-  "date": "24 Dec 2024, 10:20"
+  "date": "24 Dec 2024, 10:20",
+  "nowplaying": "false"
 }
 ```
 
