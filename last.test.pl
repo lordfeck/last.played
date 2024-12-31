@@ -35,6 +35,3 @@ say $lfm->get_top_track_alltime($USER);
 say $lfm->get_top_track_year($USER);
 say $lfm->get_top_track_week($USER);
 
-# test widgets
-mkdir 'widgets' unless -d 'widgets';
-$lfm->make_widget($USER);
