@@ -4,7 +4,6 @@ use v5.16;
 use strict;
 use warnings;
 
-use lib 'lib';
 use Last::Played;
 use Plack::Request;
 
