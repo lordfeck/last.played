@@ -1,5 +1,5 @@
 INSTALLER := $(shell command -v cpanm 2>/dev/null || echo cpan)
-PERL_DEPS = LWP Plack JSON Starman
+PERL_DEPS = LWP Plack JSON Starman Mozilla::CA
 
 .PHONY: check_root
 check_root:
@@ -15,7 +15,7 @@ init:
 
 .PHONY: run
 run:
-	plackup --port 5010 last.played.psgi
+	plackup -I 'lib' --port 5010 last.played.psgi
 
 .PHONY: install
 install: check_root
