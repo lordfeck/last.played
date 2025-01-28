@@ -1,3 +1,7 @@
 *.swp
 .DS_Store
+<<<<<<< Updated upstream
 widgets/*
+=======
+widgets/
+>>>>>>> Stashed changes
