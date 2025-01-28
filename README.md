@@ -30,31 +30,19 @@ OR
 http://localhost:5010/now?user=foo
 ```
 
-and you will see responses like this:
+and you will see cleaner responses like this:
 
 ```
 {
   "url": "https://www.last.fm/music/Lush/_/Sweetness+and+Light",
   "album": "Sweetness And Light - Single",
   "artist": "Lush",
-  "image": [
-    {
-      "#text": "https://lastfm.freetls.fastly.net/i/u/34s/28721e8f6088e0583ee45e6313816f7c.jpg",
-      "size": "small"
-    },
-    {
-      "size": "medium",
-      "#text": "https://lastfm.freetls.fastly.net/i/u/64s/28721e8f6088e0583ee45e6313816f7c.jpg"
-    },
-    {
-      "#text": "https://lastfm.freetls.fastly.net/i/u/174s/28721e8f6088e0583ee45e6313816f7c.jpg",
-      "size": "large"
-    },
-    {
-      "size": "extralarge",
-      "#text": "https://lastfm.freetls.fastly.net/i/u/300x300/28721e8f6088e0583ee45e6313816f7c.jpg"
-    }
-  ],
+  "image": {
+      "small": "https://lastfm.freetls.fastly.net/i/u/34s/28721e8f6088e0583ee45e6313816f7c.jpg",
+      "medium": "https://lastfm.freetls.fastly.net/i/u/64s/28721e8f6088e0583ee45e6313816f7c.jpg"
+      "large": "https://lastfm.freetls.fastly.net/i/u/174s/28721e8f6088e0583ee45e6313816f7c.jpg",
+      "extralarge": "https://lastfm.freetls.fastly.net/i/u/300x300/28721e8f6088e0583ee45e6313816f7c.jpg"
+  },
   "name": "Sweetness and Light",
   "date": "24 Dec 2024, 10:20",
   "nowplaying": "false"
@@ -81,27 +69,20 @@ The response will always be as follows. Note there is less detail than the 'now 
   "url": "https://www.last.fm/music/All+Them+Witches/_/Bulls",
   "playcount": "5",
   "artist": "All Them Witches",
-  "image": [
-    {
+  "image": {
       "size": "small",
-      "#text": "https://lastfm.freetls.fastly.net/i/u/34s/2a96cbd8b46e442fc41c2b86b821562f.png"
-    },
-    {
-      "size": "medium",
-      "#text": "https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png"
-    },
-    {
-      "#text": "https://lastfm.freetls.fastly.net/i/u/174s/2a96cbd8b46e442fc41c2b86b821562f.png",
-      "size": "large"
-    },
-    {
-      "size": "extralarge",
-      "#text": "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png"
+      "small": "https://lastfm.freetls.fastly.net/i/u/34s/2a96cbd8b46e442fc41c2b86b821562f.png"
+      "medium": "https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png"
+      "large": "https://lastfm.freetls.fastly.net/i/u/174s/2a96cbd8b46e442fc41c2b86b821562f.png",
+      "extralarge": "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png"
     }
-  ]
 }
 
 ```
+
+# Widget card
+
+Finally you may generate a "now playing" widget card. Deatils and sample to follow, the final form will be implementation-dependent.
 
 ## Installing on Linux (Debian and derivatives)
 `make install` should take care of that. It will copy and enable the service, as well as creating a blank logfile. It assumes you have a user `www-data` who will be granted privileges to run the script.

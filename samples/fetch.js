@@ -8,14 +8,13 @@ window.addEventListener('load', function() {
 
         if (req.status == 200) {
             let nowPlaying = "<div class=\"trackinfo\"> <span><b>" + resp.name + "</b> by " + resp.artist + "<br></span>";
-            const albumArt = resp.image.find((img) => img.size === 'medium');
             if (resp.nowplaying) {
                 nowPlaying += "<i>Listening now!</i>";
             } else {
                 nowPlaying += "<i>Played: " + resp.date + "</i>";
             }
             nowPlaying += "</div>";
-            if (albumArt) nowPlaying += "<img src=\"" + albumArt['#text'] + "\" alt=\"album art\" />";
+            if (resp.image.medium) nowPlaying += "<img src=\"" + resp.image.medium + "\" alt=\"album art\" />";
             widget.innerHTML = nowPlaying;
         } else {
             widget.innerHTML = "Problem contacting Last.fm";
