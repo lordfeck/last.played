@@ -1,6 +1,6 @@
 Last.Played
 ============
-No-frills PSGI application that will fetch the last played track of any Last.FM user. It also can fetch the user's top played track of all time, last week or last 12 months.
+No-frills PSGI application that will generate an embeddable widget card for any Last.FM user. It also offers a clean JSON API to fetch the last played track, the user's top played track of all time, last week or last 12 months. The [sample javascript](samples/fetch.js) demonstrates usage of the API.
 
 Requires a Last.FM API key and a few common Perl modules to work.
 
@@ -13,7 +13,9 @@ Use the makefile to install all dependencies (Plack, LWP, Starman, JSON):
 make init
 ```
 
-Alternative: Run `apt install libplack-perl libwww-perl libjson-perl starman` to install the packages globally on Debian. NOTE: The widget maker is better with `Mozilla::CA` which is avialable in newer Debian repositories as `libmozilla-ca-perl`. It isn't available in Bookworm (12).
+Alternative: Run `apt install libplack-perl libwww-perl libjson-perl starman` to install the packages globally on Debian.
+
+NOTE: The widget maker needs HTTPS to fetch album art images, thus it is better with `Mozilla::CA` installed. This module isn't always available; in such a case the module will ignore SSL verification as a fallback.
 
 Set the env var `LASTFM_API_KEY=<your_key>` as an export in your shell somewhere. If you don't already have a Last.fm API key, [you can obtain one here](https://www.last.fm/api/account/create).
 
@@ -23,6 +25,8 @@ Optional: set the env var `LASTFM_USER_ID` to a default user ID in your shell. T
 `make run` will start the PSGI script and bind to port 5010 as a default. In production you'll want to host it behind a reverse proxy.
 
 Make requests as follows:
+
+### Now Playing
 
 ```
 http://localhost:5010/?user=foo
@@ -51,8 +55,7 @@ and you will see cleaner responses like this:
 
 Now it is up to you how to embed it on your website. Some sample JS code has been provided.
 
-# OTHER ROUTES
-
+### Top Tracks 
 You can also request the most played track over the following time periods: week, year and month.
 
 ```
@@ -70,7 +73,6 @@ The response will always be as follows. Note there is less detail than the 'now 
   "playcount": "5",
   "artist": "All Them Witches",
   "image": {
-      "size": "small",
       "small": "https://lastfm.freetls.fastly.net/i/u/34s/2a96cbd8b46e442fc41c2b86b821562f.png"
       "medium": "https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png"
       "large": "https://lastfm.freetls.fastly.net/i/u/174s/2a96cbd8b46e442fc41c2b86b821562f.png",
@@ -80,9 +82,13 @@ The response will always be as follows. Note there is less detail than the 'now 
 
 ```
 
-# Widget card
+### Widget card
+Finally you may generate a widget card which shows the user name, total scrobbles, current track and the current track's album art. This is a WIP - the current version is rough!
 
-Finally you may generate a "now playing" widget card. Deatils and sample to follow, the final form will be implementation-dependent.
+
+```
+http://localhost:5010/widget?user=<USERNAME>
+```
 
 ## Installing on Linux (Debian and derivatives)
 `make install` should take care of that. It will copy and enable the service, as well as creating a blank logfile. It assumes you have a user `www-data` who will be granted privileges to run the script.
