@@ -170,14 +170,14 @@ sub make_image_write {
 
 sub make_widget {
     my ($self, $user) = @_;
+    my $imgGd = 0;
     my $userInfo = get_user_info_hash($self, $user);
     my $recent = get_last_played_hash($self, $user);
     # or pass in a template file - todo...
     my $widget_canvas = GD::Image->newTrueColor($WIDGET_W, $WIDGET_H, 1);
 
     my $req = do_req("$recent->{image}->{large}");
-    croak "Could not load image" unless $req->is_success;
-    my $imgGd = GD::Image->newFromJpegData($req->content);
+    $imgGd = GD::Image->newFromJpegData($req->content) if $req->is_success;
 
     my $black = $widget_canvas->colorAllocate(@COLOUR_BLACK);
     my $white = $widget_canvas->colorAllocate(@COLOUR_WHITE);
@@ -193,7 +193,7 @@ sub make_widget {
     # copy($sourceImage,$dstX,$dstY,$srcX,$srcY,$width,$height)
     #    $widget_canvas->copy($imgGd,175,50,0,0,$imgGd->getBounds());
     # copyResized($sourceImage,$dstX,$dstY,$srcX,$srcY,$destW,$destH,$srcW,$srcH)
-    $widget_canvas->copyResized($imgGd,150,50,0,0,120,120,$imgGd->getBounds());
+    $widget_canvas->copyResized($imgGd,150,50,0,0,120,120,$imgGd->getBounds()) if $imgGd;
 
     #    make_image_write $widget_canvas, $user;
     return $widget_canvas->png;
@@ -211,7 +211,7 @@ sub do_req {
     return $AGENT->request(HTTP::Request->new(GET => $reqUrl));
 }
 
-# ugh, this is necessary to get around Last.fm's poorly formatted JSON. maybe I should've just went with XML...
+# ugh, this is necessary to get around Last.fm's poorly formatted JSON. maybe I should've just went with XML... haha no
 sub clean_img_field {
     my ($img_field) = @_;
     my %imgs = ();
