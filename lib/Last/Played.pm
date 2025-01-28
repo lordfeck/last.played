@@ -55,7 +55,10 @@ sub new {
     croak "Last.FM API key required." if !$opts{api_key} or !($opts{api_key} =~ /^\w+$/);
 
     eval { require Mozilla::CA; };
-    croak "Mozilla::CA must be installed to fetch images for widgets." if $@ =~ /Can't locate Mozilla\/CA.pm/;
+    if ($@ =~ /Can't locate Mozilla\/CA.pm/) {
+        warn "Mozilla::CA should be installed to fetch images for widgets. Disabling verify_hostname instead.";
+        $AGENT->ssl_opts('verify_hostname' => 0);
+    }
 
     my %self = (
         api_key => $opts{api_key},

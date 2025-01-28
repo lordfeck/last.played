@@ -13,7 +13,7 @@ Use the makefile to install all dependencies (Plack, LWP, Starman, JSON):
 make init
 ```
 
-Alternative: Run `apt install libplack-perl libwww-perl libjson-perl starman` to install the packages globally on Debian.
+Alternative: Run `apt install libplack-perl libwww-perl libjson-perl starman` to install the packages globally on Debian. NOTE: The widget maker is better with `Mozilla::CA` which is avialable in newer Debian repositories as `libmozilla-ca-perl`. It isn't available in Bookworm (12).
 
 Set the env var `LASTFM_API_KEY=<your_key>` as an export in your shell somewhere. If you don't already have a Last.fm API key, [you can obtain one here](https://www.last.fm/api/account/create).
 
