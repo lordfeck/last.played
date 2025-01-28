@@ -18,6 +18,7 @@ my %routes = (
     '/top-alltime' => \&get_top_alltime,
     '/top-week' => \&get_top_week,
     '/top-year' => \&get_top_year,
+    '/widget' => \&make_widget,
 );
 
 my $lfm = Last::Played->new(api_key => $key);
@@ -49,6 +50,14 @@ sub get_top_year {
 
     return [ $status, [ 'Content-Type' => 'application/json' ], [ $top ] ];
 }
+
+sub make_widget {
+    my $widget = $lfm->make_widget(shift);
+    my $status = ($widget =~ /error/) ? 500 : 200;
+
+    return [ $status, [ 'Content-Type' => 'image/png' ], [ $widget ] ];
+}
+
 sub get_top_week {
     my $top = $lfm->get_top_track_week(shift);
     my $status = ($top =~ /error/) ? 500 : 200;

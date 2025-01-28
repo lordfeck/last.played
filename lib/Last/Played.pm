@@ -195,7 +195,8 @@ sub make_widget {
     # copyResized($sourceImage,$dstX,$dstY,$srcX,$srcY,$destW,$destH,$srcW,$srcH)
     $widget_canvas->copyResized($imgGd,150,50,0,0,120,120,$imgGd->getBounds());
 
-    make_image_write $widget_canvas, $user;
+    #    make_image_write $widget_canvas, $user;
+    return $widget_canvas->png;
 }
 
 
