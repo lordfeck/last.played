@@ -21,6 +21,25 @@ my $USER = $ENV{LASTFM_USER_ID};
 
 my $lfm = Last::Played->new(api_key => $key);
 
+# test regex
+my $img = "foo.png";
+if ($img =~ /png$/) {
+    say eval { return "PNG Match!"; };
+} 
+
+$img = "foo.jpg";
+if ($img =~ /png$/) {
+    say eval { return "PNG Match! this should not be."; };
+} else { say "png mismatch, as expected"; }
+
+if ($img =~ /jpg$|jpeg$/) {
+    say eval { return "JPEG match!" };
+}
+$img = "foo.jpeg";
+if ($img =~ /jpg$|jpeg$/) {
+    say eval { return "JPEG match!" };
+}
+
 # Test missing user 
 my $nouser = $lfm->get_last_played();
 if ($nouser =~ /username required/) {

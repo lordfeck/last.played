@@ -176,11 +176,17 @@ sub make_widget {
     my $imgGd = 0;
     my $userInfo = get_user_info_hash($self, $user);
     my $recent = get_last_played_hash($self, $user);
+    my $img = $recent->{image}->{large};
     # or pass in a template file - todo...
     my $widget_canvas = GD::Image->newTrueColor($WIDGET_W, $WIDGET_H, 1);
 
-    my $req = do_req("$recent->{image}->{large}");
-    $imgGd = GD::Image->newFromJpegData($req->content) if $req->is_success;
+    my $req = do_req($img);
+    if ($req->is_success && $img =~ /png$/) {
+        $imgGd = eval { return GD::Image->newFromPngData($req->content); };
+    } elsif ($req->is_success && $img =~ /jpg$|jpeg$/) {
+        $imgGd = eval { return GD::Image->newFromJpegData($req->content); };
+    }
+
 
     my $black = $widget_canvas->colorAllocate(@COLOUR_BLACK);
     my $white = $widget_canvas->colorAllocate(@COLOUR_WHITE);
