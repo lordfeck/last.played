@@ -7,13 +7,13 @@ Requires a Last.FM API key and a few common Perl modules to work.
 The Last::Played library also works standalone. The methods will be documented in POD, or just refer to `last.test.pl` for an example.
 
 # USING
-Use the makefile to install all dependencies (Plack, LWP, Starman, JSON):
+Use the makefile to install all dependencies (Plack, LWP, Starman, JSON, Time::Piece):
 
 ```
 make init
 ```
 
-Alternative: Run `apt install libplack-perl libwww-perl libjson-perl starman` to install the packages globally on Debian.
+Alternative: Run `apt install libplack-perl libwww-perl libjson-perl starman ` to install the packages globally on Debian.
 
 NOTE: The widget maker needs HTTPS to fetch album art images, thus it is better with `Mozilla::CA` installed. This module isn't always available; in such a case the module will ignore SSL verification as a fallback.
 

@@ -1,5 +1,5 @@
 INSTALLER := $(shell command -v cpanm 2>/dev/null || echo cpan)
-PERL_DEPS = LWP Plack JSON Starman Mozilla::CA
+PERL_DEPS = LWP Plack JSON Starman Mozilla::CA Time::Piece
 
 .PHONY: check_root
 check_root:

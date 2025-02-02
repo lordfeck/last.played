@@ -10,6 +10,7 @@ use GD;
 
 use LWP::UserAgent;
 use HTTP::Request;
+use Time::Piece;
 
 our $VERSION = '1.00';
 our $AGENT = LWP::UserAgent->new(agent => "thransoft.last.played/$VERSION");
@@ -19,7 +20,8 @@ our ($WIDGET_W, $WIDGET_H) = (300, 200);
 our $WIDGET_WRITE_DIR = "./widgets"; # todo: use instance var??
 our @COLOUR_BLACK = (0,0,0);
 our @COLOUR_WHITE = (255,255,255);
-our @COLOUR_RED = (183,3,0);
+our @COLOUR_RED = (180,0,0);
+our @COLOUR_MED_RED = (200,60,60);
 
 # API Routes
 our $GET_RECENT_TRACKS = "http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&nowplaying=\"true\"&format=json&limit=1";
@@ -163,10 +165,13 @@ sub make_widget {
     my $userInfo = get_user_info_hash($self, $user);
     my $recent = get_last_played_hash($self, $user);
     my $img = $recent->{image}->{large};
-    # or pass in a template file - todo...
-    my $widget_canvas = GD::Image->newTrueColor($WIDGET_W, $WIDGET_H, 1);
 
+    # some day we will pass in a template file
+    my $widget_canvas = GD::Image->newTrueColor($WIDGET_W, $WIDGET_H, 1);
     my $req = do_req($img);
+
+    # Note: we have done three fetches just to get here. This could appear slow to the user.
+
     if ($req->is_success && $img =~ /png$/) {
         $imgGd = eval { return GD::Image->newFromPngData($req->content); };
     } elsif ($req->is_success && $img =~ /jpg$|jpeg$/) {
@@ -178,20 +183,25 @@ sub make_widget {
     my $black = $widget_canvas->colorAllocate(@COLOUR_BLACK);
     my $white = $widget_canvas->colorAllocate(@COLOUR_WHITE);
     my $red = $widget_canvas->colorAllocate(@COLOUR_RED);
+    my $medRed = $widget_canvas->colorAllocate(@COLOUR_MED_RED);
+
+    my $regDate = Time::Piece->gmtime($userInfo->{registered}->{unixtime});
 
     $widget_canvas->fill(0,0,$red);
 
-    $widget_canvas->string(gdSmallFont,2,10,$user,$white);
-    $widget_canvas->string(gdSmallFont,2,30,$userInfo->{playcount},$white);
-    $widget_canvas->string(gdSmallFont,2,40,$recent->{name},$white);
-    $widget_canvas->string(gdSmallFont,2,50,$recent->{artist},$white);
+    $widget_canvas->string(gdMediumBoldFont,12,5,"Last.played",$white);
+    $widget_canvas->filledRectangle(0,23,300,23.5,$white);
+    $widget_canvas->filledRectangle(0,25,300,25.5,$white);
+    $widget_canvas->filledRectangle(0,27,300,27.5,$white);
+    $widget_canvas->string(gdMediumBoldFont,12,42,"Track:",$black);
+    $widget_canvas->string(gdSmallFont,12,54,$recent->{name},$black);
+    $widget_canvas->string(gdMediumBoldFont,12,86,"Artist:",$black);
+    $widget_canvas->string(gdSmallFont,12,98,$recent->{artist},$black);
+    $widget_canvas->filledRectangle(0,180,300,200,$medRed);
+    $widget_canvas->string(gdTinyFont,12,185,"$user on Last.fm :: $userInfo->{playcount} scrobbles since ". $regDate->year,$black);
 
-    # copy($sourceImage,$dstX,$dstY,$srcX,$srcY,$width,$height)
-    #    $widget_canvas->copy($imgGd,175,50,0,0,$imgGd->getBounds());
-    # copyResized($sourceImage,$dstX,$dstY,$srcX,$srcY,$destW,$destH,$srcW,$srcH)
-    $widget_canvas->copyResized($imgGd,150,50,0,0,120,120,$imgGd->getBounds()) if $imgGd;
+    $widget_canvas->copyResized($imgGd,166,42,0,0,120,120,$imgGd->getBounds()) if $imgGd;
 
-    #    make_image_write $widget_canvas, $user;
     return $widget_canvas->png;
 }
 
