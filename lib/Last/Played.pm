@@ -149,7 +149,6 @@ sub get_user_info_hash {
 
     if ($res->is_success) {
         return decode_json($res->content)->{user};
-        #  return encode_json($json);
     } elsif ($res->code eq 401 or $res->code eq 403) {
         return error ("could not authenticate with last.fm");
     } else {
@@ -157,19 +156,6 @@ sub get_user_info_hash {
     }
 }
 
-# todo: fail gracefully
-sub make_image_write {
-    my ($widget_canvas, $user) = @_;
-    my $ts = time;
-    carp "Cannot find $WIDGET_WRITE_DIR" unless -d $WIDGET_WRITE_DIR;
-    my $write_path = "$WIDGET_WRITE_DIR/lp_${user}_${ts}.png";
-    open (my $TMPFILE, ">", "$write_path") 
-        or carp "Cannot open $write_path to write";
-
-    binmode $TMPFILE;
-    print $TMPFILE $widget_canvas->png;
-    close $TMPFILE;
-}
 
 sub make_widget {
     my ($self, $user) = @_;
@@ -185,8 +171,9 @@ sub make_widget {
         $imgGd = eval { return GD::Image->newFromPngData($req->content); };
     } elsif ($req->is_success && $img =~ /jpg$|jpeg$/) {
         $imgGd = eval { return GD::Image->newFromJpegData($req->content); };
+    } elsif ($req->is_success && $img =~ /gif$/) {
+        $imgGd = eval { return GD::Image->newFromGifData($req->content); };
     }
-
 
     my $black = $widget_canvas->colorAllocate(@COLOUR_BLACK);
     my $white = $widget_canvas->colorAllocate(@COLOUR_WHITE);

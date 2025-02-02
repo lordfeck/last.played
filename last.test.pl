@@ -7,6 +7,21 @@ use warnings;
 use lib 'lib';
 use Last::Played;
 
+my $WIDGET_WRITE_DIR = 'widgets';
+
+sub make_image_write {
+    my ($widget_canvas, $user) = @_;
+    my $ts = time;
+    die "Cannot find $WIDGET_WRITE_DIR" unless -d $WIDGET_WRITE_DIR;
+    my $write_path = "$WIDGET_WRITE_DIR/lp_${user}_${ts}.png";
+    open (my $TMPFILE, ">", "$write_path") 
+        or die "Cannot open $write_path to write";
+
+    binmode $TMPFILE;
+    print $TMPFILE $widget_canvas;
+    close $TMPFILE;
+}
+
 # Test missing API key
 eval { my $lfm1 = Last::Played->new(); };
 
@@ -20,25 +35,6 @@ my $key = $ENV{LASTFM_API_KEY};
 my $USER = $ENV{LASTFM_USER_ID};
 
 my $lfm = Last::Played->new(api_key => $key);
-
-# test regex
-my $img = "foo.png";
-if ($img =~ /png$/) {
-    say eval { return "PNG Match!"; };
-} 
-
-$img = "foo.jpg";
-if ($img =~ /png$/) {
-    say eval { return "PNG Match! this should not be."; };
-} else { say "png mismatch, as expected"; }
-
-if ($img =~ /jpg$|jpeg$/) {
-    say eval { return "JPEG match!" };
-}
-$img = "foo.jpeg";
-if ($img =~ /jpg$|jpeg$/) {
-    say eval { return "JPEG match!" };
-}
 
 # Test missing user 
 my $nouser = $lfm->get_last_played();
@@ -55,5 +51,6 @@ say $lfm->get_top_track_year($USER);
 say $lfm->get_top_track_week($USER);
 
 # test widgets
-mkdir 'widgets' unless -d 'widgets';
-$lfm->make_widget($USER);
+mkdir $WIDGET_WRITE_DIR unless -d $WIDGET_WRITE_DIR;
+make_image_write($lfm->make_widget($USER), $USER);
+
