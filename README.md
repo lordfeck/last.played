@@ -90,6 +90,10 @@ Finally you may generate a widget card which shows the user name, total scrobble
 http://localhost:5010/widget?user=<USERNAME>
 ```
 
+A sample of the current last.played widget card is shown below:
+
+![LP Sample](misc/lp_sample.png)
+
 ## Installing on Linux (Debian and derivatives)
 `make install` should take care of that. It will copy and enable the service, as well as creating a blank logfile. It assumes you have a user `www-data` who will be granted privileges to run the script.
 
