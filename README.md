@@ -98,3 +98,10 @@ A sample of the current last.played widget card is shown below:
 `make install` should take care of that. It will copy and enable the service, as well as creating a blank logfile. It assumes you have a user `www-data` who will be granted privileges to run the script.
 
 Reminder: you'll need to specify the `LASTFM_API_KEY` in the user's environment. You may wish to modify the systemd unitfile to achieve this.
+
+## Release History
+#### v1.0, 2nd Feb 2025
+Initial release. Add JSON and widget GET in Last::Played.
+
+#### v1.1, 28th June 2026
+Add LRU caching in the widget generator to reduce subseqent calls to the Last.FM API. User Info (current scrobbles and reg date) are cached for 5 days. 500 max entries. Album art is cached for 1 year, 100 max entries.
