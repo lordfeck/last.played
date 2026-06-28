@@ -104,4 +104,4 @@ Reminder: you'll need to specify the `LASTFM_API_KEY` in the user's environment.
 Initial release. Add JSON and widget GET in Last::Played.
 
 #### v1.1, 28th June 2026
-Add LRU caching in the widget generator to reduce subseqent calls to the Last.FM API. User Info (current scrobbles and reg date) are cached for 5 days. 500 max entries. Album art is cached for 1 year, 100 max entries.
+Add LRU caching in the widget generator to reduce subseqent calls to the Last.FM API. User Info (current scrobbles and reg date) is cached for 5 days with 500 max entries. Album art is cached for 1 year with 100 max entries. Most album art is below 20kb, so this will be manageable on my server.
