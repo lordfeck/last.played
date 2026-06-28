@@ -17,13 +17,18 @@ my $AGENT = LWP::UserAgent->new(agent => "thransoft.last.played/$VERSION");
 # select correct method depending on whether the cache is available
 sub get_user_info_hash;
 sub get_user_info_cache;
-sub get_user_info;
+sub get_widget_art_cache;
+sub do_img_req;
 
 my $GET_USER_INFO_METHOD = \&get_user_info_hash;
+my $GET_WIDGET_ART_METHOD = \&do_img_req;
 
 my $cache = 0;
+my $albumArtCache = 0;
 my $CACHE_MAX_ENTRIES = 500;
+my $ART_CACHE_MAX_ENTRIES = 100;
 my $CACHE_EXPIRY_TIME = 5 * 24 * 60 * 60; # 5 days
+my $ART_CACHE_EXPIRY_TIME = 365 * 24 * 60 * 60; # 365 days
 
 # widget specific consts
 my ($WIDGET_W, $WIDGET_H) = (300, 200);
@@ -78,6 +83,8 @@ sub new {
     } else {
         $cache = Cache::LRU->new( size => $CACHE_MAX_ENTRIES );
         $GET_USER_INFO_METHOD = \&get_user_info_cache;
+        $albumArtCache = Cache::LRU->new( size => $ART_CACHE_MAX_ENTRIES );
+        $GET_WIDGET_ART_METHOD = \&get_widget_art_cache;
     }
 
     my %self = (
@@ -184,7 +191,6 @@ sub get_user_info_cache {
     my ($self, $user) = @_;
 
     my $entry = $cache->get($user);
-
     return $entry->{userInfo} if ($entry && $entry->{expires_at} > time); 
 
     my $userInfo = get_user_info_hash($self, $user);
@@ -197,27 +203,50 @@ sub get_user_info_cache {
     return $userInfo;
 }
 
+sub get_widget_art_cache {
+    my ($self, $imgUrl) = @_;
+
+    my $entry = $albumArtCache->get($imgUrl);
+    return $entry->{art} if ($entry && $entry->{expires_at} > time); 
+
+    my $imgGd = do_img_req($self, $imgUrl);
+
+    $cache->set($imgUrl, {
+        art      => $imgGd,
+        expires_at => time + $ART_CACHE_EXPIRY_TIME
+    });
+
+    return $imgGd;
+}
+
+sub get_widget_art {
+    return &$GET_WIDGET_ART_METHOD(@_);
+}
+
+sub do_img_req {
+    my ($self, $imgUrl) = @_;
+    my $req = do_req($imgUrl);
+
+    if ($req->is_success && $imgUrl =~ /png$/) {
+        return eval { GD::Image->newFromPngData($req->content); };
+    } elsif ($req->is_success && $imgUrl =~ /jpg$|jpeg$/) {
+        return eval { GD::Image->newFromJpegData($req->content); };
+    } elsif ($req->is_success && $imgUrl =~ /gif$/) {
+        return eval { GD::Image->newFromGifData($req->content); };
+    }
+}
 
 sub make_widget {
     my ($self, $user) = @_;
     my $imgGd = 0;
     my $userInfo = get_user_info($self, $user);
     my $recent = get_last_played_hash($self, $user);
-    my $img = $recent->{image}->{large};
+    my $imgUrl = $recent->{image}->{large};
 
     # some day we will pass in a template file
     my $widget_canvas = GD::Image->newTrueColor($WIDGET_W, $WIDGET_H, 1);
-    my $req = do_req($img);
 
-    # Note: we have done three fetches just to get here. This could appear slow to the user.
-
-    if ($req->is_success && $img =~ /png$/) {
-        $imgGd = eval { return GD::Image->newFromPngData($req->content); };
-    } elsif ($req->is_success && $img =~ /jpg$|jpeg$/) {
-        $imgGd = eval { return GD::Image->newFromJpegData($req->content); };
-    } elsif ($req->is_success && $img =~ /gif$/) {
-        $imgGd = eval { return GD::Image->newFromGifData($req->content); };
-    }
+    $imgGd = get_widget_art($self, $imgUrl);
 
     my $black = $widget_canvas->colorAllocate(@COLOUR_BLACK);
     my $white = $widget_canvas->colorAllocate(@COLOUR_WHITE);
