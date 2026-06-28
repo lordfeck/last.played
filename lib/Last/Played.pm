@@ -6,27 +6,37 @@ use v5.16;
 use Carp;
 use JSON;
 use GD;
-#use GD::Font; # remove GD Font when we load in our own.
 
 use LWP::UserAgent;
 use HTTP::Request;
 use Time::Piece;
 
-our $VERSION = '1.00';
-our $AGENT = LWP::UserAgent->new(agent => "thransoft.last.played/$VERSION");
+my $VERSION = '1.00';
+my $AGENT = LWP::UserAgent->new(agent => "thransoft.last.played/$VERSION");
+
+# select correct method depending on whether the cache is available
+sub get_user_info_hash;
+sub get_user_info_cache;
+sub get_user_info;
+
+my $GET_USER_INFO_METHOD = \&get_user_info_hash;
+
+my $cache = 0;
+my $CACHE_MAX_ENTRIES = 500;
+my $CACHE_EXPIRY_TIME = 5 * 24 * 60 * 60; # 5 days
 
 # widget specific consts
-our ($WIDGET_W, $WIDGET_H) = (300, 200);
-our $WIDGET_WRITE_DIR = "./widgets"; # todo: use instance var??
-our @COLOUR_BLACK = (0,0,0);
-our @COLOUR_WHITE = (255,255,255);
-our @COLOUR_RED = (180,0,0);
-our @COLOUR_MED_RED = (200,60,60);
+my ($WIDGET_W, $WIDGET_H) = (300, 200);
+#my $WIDGET_WRITE_DIR = "./widgets"; # todo: use instance var??
+my @COLOUR_BLACK = (0,0,0);
+my @COLOUR_WHITE = (255,255,255);
+my @COLOUR_RED = (180,0,0);
+my @COLOUR_MED_RED = (200,60,60);
 
 # API Routes
-our $GET_RECENT_TRACKS = "http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&nowplaying=\"true\"&format=json&limit=1";
-our $GET_TOP_TRACKS = "http://ws.audioscrobbler.com/2.0/?method=user.gettoptracks&format=json&limit=1";
-our $GET_USER_INFO = "http://ws.audioscrobbler.com/2.0/?method=user.getInfo&format=json";
+my $GET_RECENT_TRACKS = "http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&nowplaying=\"true\"&format=json&limit=1";
+my $GET_TOP_TRACKS = "http://ws.audioscrobbler.com/2.0/?method=user.gettoptracks&format=json&limit=1";
+my $GET_USER_INFO = "http://ws.audioscrobbler.com/2.0/?method=user.getInfo&format=json";
 
 =head1 NAME
 Last::Played
@@ -41,7 +51,7 @@ Last.fm API Key, obtainable at https://www.last.fm/api/account/create.
 
 A callback URL is not necessary.
 
-Depends on Carp and LWP.
+Depends on Carp and LWP. Cache::LRU should also be installed to avoid extraneous fetches.
 
 =head1 METHODS
 get_last_played
@@ -60,6 +70,14 @@ sub new {
     if ($@ =~ /Can't locate Mozilla\/CA.pm/) {
         warn "Mozilla::CA should be installed to fetch images for widgets. Disabling verify_hostname instead.";
         $AGENT->ssl_opts('verify_hostname' => 0);
+    }
+
+    eval { require Cache::LRU; };
+    if ($@ =~ /Can't locate Cache/) {
+        warn "Cache::LRU should be installed for optimal performance.";
+    } else {
+        $cache = Cache::LRU->new( size => $CACHE_MAX_ENTRIES );
+        $GET_USER_INFO_METHOD = \&get_user_info_cache;
     }
 
     my %self = (
@@ -144,6 +162,10 @@ sub get_top_track_period {
     }
 }
 
+sub get_user_info {
+    return &$GET_USER_INFO_METHOD(@_);
+}
+
 sub get_user_info_hash {
     my ($self, $user) = @_;
 
@@ -158,11 +180,28 @@ sub get_user_info_hash {
     }
 }
 
+sub get_user_info_cache {
+    my ($self, $user) = @_;
+
+    my $entry = $cache->get($user);
+
+    return $entry->{userInfo} if ($entry && $entry->{expires_at} > time); 
+
+    my $userInfo = get_user_info_hash($self, $user);
+
+    $cache->set($user, {
+        userInfo      => $userInfo,
+        expires_at => time + $CACHE_EXPIRY_TIME
+    });
+
+    return $userInfo;
+}
+
 
 sub make_widget {
     my ($self, $user) = @_;
     my $imgGd = 0;
-    my $userInfo = get_user_info_hash($self, $user);
+    my $userInfo = get_user_info($self, $user);
     my $recent = get_last_played_hash($self, $user);
     my $img = $recent->{image}->{large};
 
